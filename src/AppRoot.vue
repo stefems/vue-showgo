@@ -15,17 +15,25 @@ export default {
   		if (query.get("access_token") && query.get("refresh_token") ) {
   			token_pairs.push({ access_token: query.get("access_token"), refresh_token: query.get("refresh_token")});
   		}
-  		//Look for localstorage for user info
-  		if (localStorage.getItem("showgo_user") !== "undefined" && localStorage.getItem("showgo_user") !== null) {
-  			token_pairs.push({ access_token: JSON.parse(localStorage.getItem("showgo_user")).access_token, refresh_token: JSON.parse(localStorage.getItem("showgo_user")).refresh_token});
+  		//Look for sessionStorage for user info
+  		if (sessionStorage.getItem("showgo_user") !== "undefined" && sessionStorage.getItem("showgo_user") !== null) {
+  			token_pairs.push({ access_token: JSON.parse(sessionStorage.getItem("showgo_user")).access_token, refresh_token: JSON.parse(sessionStorage.getItem("showgo_user")).refresh_token});
   		}
 
   		if (token_pairs.length !== 0) {
           local_user_management.getLocalUser(token_pairs).then( (response) => {
-            console.log(response);
-            this.$router.push('/secret');
+            if (!response.error) { 
+              let user = response.data;
+              this.$root.$data.logged_in = true;
+              this.$root.$data.user = user;
+              sessionStorage.setItem("showgo_user", JSON.stringify({access_token: user.spotify_access_token, refresh_token: user.spotify_refresh_token}));
+              this.$router.push('/secret');
+            }
+            else {
+              console.log("user acquisition error");
+            }
+            
           });
-  	  		//this.$router.push('secret');
 	  	}
 	  	else {
 	  		console.log("no user, go to home");

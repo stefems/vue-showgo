@@ -6,13 +6,13 @@ import router from './router'
 
 Vue.config.productionTip = false
 
-const user = {logged_in: false}
+const state = {logged_in: false, user: {}}
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  data: user,
+  data: state,
   template: '<AppRoot/>',
   components: { AppRoot }
 })
